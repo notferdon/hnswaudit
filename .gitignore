@@ -1,0 +1,21 @@
+# Python and build residue
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.venv-*/
+build/
+dist/
+*.egg-info/
+# Regenerated local experiments
+controls/
+*.vectors.npy
+
+# Local configuration, secrets, operating system files
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

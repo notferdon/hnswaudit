@@ -1,0 +1,36 @@
+{
+ "label": "same-process seed=3 mode=churn",
+ "live": 2000,
+ "missing_top100": [
+  1,
+  446,
+  1051,
+  1442,
+  1538,
+  1713,
+  3458,
+  3501
+ ],
+ "missing_top1000": [
+  446,
+  1051,
+  1442,
+  1538,
+  3458,
+  3501
+ ],
+ "get_finds_missing_top1000": {
+  "446": true,
+  "1051": true,
+  "1442": true,
+  "1538": true,
+  "3458": true,
+  "3501": true
+ },
+ "seconds": 83.3,
+ "sync_threshold": 100,
+ "chromadb": "1.5.9",
+ "python": "3.12.3",
+ "seed": 3,
+ "mode": "churn"
+}

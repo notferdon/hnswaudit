@@ -1,0 +1,57 @@
+{
+ "chromadb": "1.5.9",
+ "cases": [
+  {
+   "planted": "42",
+   "plant_log": "planted: user id 42 label 43 internal 7 level 0; removed from 30 layer-0 lists, 0 upper lists",
+   "audit_unreachable": [
+    42
+   ],
+   "engine_query_missing": [
+    42
+   ],
+   "engine_get_missing": [],
+   "audit_subset_of_engine_misses": true,
+   "audit_equals_engine_misses": true
+  },
+  {
+   "planted": "200",
+   "plant_log": "planted: user id 200 label 201 internal 224 level 0; removed from 10 layer-0 lists, 0 upper lists",
+   "audit_unreachable": [
+    200
+   ],
+   "engine_query_missing": [
+    200
+   ],
+   "engine_get_missing": [],
+   "audit_subset_of_engine_misses": true,
+   "audit_equals_engine_misses": true
+  },
+  {
+   "planted": "17",
+   "plant_log": "planted: user id 17 label 18 internal 21 level 0; removed from 14 layer-0 lists, 0 upper lists",
+   "audit_unreachable": [
+    17
+   ],
+   "engine_query_missing": [
+    17
+   ],
+   "engine_get_missing": [],
+   "audit_subset_of_engine_misses": true,
+   "audit_equals_engine_misses": true
+  }
+ ],
+ "base_audit": {
+  "status": "OK",
+  "unreachable_proven": 0,
+  "pending": 0
+ },
+ "untouched_engine": {
+  "store": "controls/run2/untouched",
+  "live": 288,
+  "K": 288,
+  "query_missing": [],
+  "get_missing": []
+ },
+ "all_pass": true
+}

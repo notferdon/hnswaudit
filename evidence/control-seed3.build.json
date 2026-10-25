@@ -1,0 +1,22 @@
+{
+ "label": "same-process seed=3 mode=control",
+ "live": 4000,
+ "missing_top100": [
+  522,
+  1722,
+  1785,
+  1958,
+  2824
+ ],
+ "missing_top1000": [
+  2824
+ ],
+ "get_finds_missing_top1000": {
+  "2824": true
+ },
+ "seconds": 252.0,
+ "chromadb": "1.5.9",
+ "python": "3.12.3",
+ "seed": 3,
+ "mode": "control"
+}

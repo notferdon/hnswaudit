@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hnswaudit"
+version = "0.1.0"
+description = "Read-only structural audit of a persisted Chroma 1.5.9 HNSW segment: which live IDs can no graph search reach?"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24,<3"]
+license = "MIT"
+license-files = ["LICENSE", "NOTICE.md", "hnswaudit/fonts/GUST-FONT-LICENSE.txt", "hnswaudit/fonts/LPPL-1.3c.txt"]
+
+[project.optional-dependencies]
+scc = ["scipy>=1.10,<2"]          # SCC counts only; without it they are reported as "not computed"
+
+[project.scripts]
+hnswaudit = "hnswaudit.cli:main"
+
+[tool.setuptools]
+packages = ["hnswaudit"]
+
+[tool.setuptools.package-data]
+hnswaudit = ["fonts/*.otf", "fonts/GUST-FONT-LICENSE.txt", "fonts/LPPL-1.3c.txt", "fonts/README.txt"]

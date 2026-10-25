@@ -1,0 +1,521 @@
+{
+ "schema": "hnswaudit.report/1",
+ "tool": "hnswaudit",
+ "version": "0.1.0",
+ "path": "8f729af2-7352-4293-99e8-6f4f4f005de8",
+ "status": "NOT_SETTLED",
+ "reason": "the persisted HNSW files are behind the store (600 queued operation(s) newer than the vector segment watermark; metadata segment seq 6600 > vector segment seq 6000): a sequence gap, so the graph Chroma serves cannot be certified from the persisted files alone",
+ "engine_assumptions": [
+  "Search starts at header.enterpoint and descends layers maxlevel..1 along that layer's edges; layer 0 is a beam search that only visits neighbours of nodes it has expanded, and deleted (tombstoned) nodes are expanded (hnswlib searchKnn/searchBaseLayerST, chroma-core/hnswlib rev e6db8c2 and nmslib/hnswlib ca42672).",
+  "Statements describe the FILES in the snapshot, not a running process: in-memory state, un-flushed WAL records, and partially persisted dirty lists are outside the proof.",
+  "Reachable (REACHABLE_NOT_CLAIMED) is necessary, not sufficient: a particular graph search can still miss a node (ef/beam, filters). Only UNREACHABLE_PROVEN is a structural claim: under the stated traversal model, no graph search can visit or return it, and only for this graph. Brute-force or filtered code paths and Chroma API behaviour were not measured.",
+  "Metadata filters, ef, k and the distance metric cannot make the graph traversal visit a node it never reaches. Only graph search is covered: any other path Chroma may use (e.g. brute-force search over small or filtered candidate sets) is not."
+ ],
+ "not_checked": [
+  "whether Chroma get() returns any listed ID (SQLite / API not consulted)",
+  "writes held only in the memory of a running Chroma process (the audit assumes a stopped, copied store; queued-but-unflushed operations are checked and, if present, block the verdict)",
+  "whether Chroma main (PR #7845) would serve exact/overfetched results even when the graph is disconnected",
+  "the engine commit that wrote the snapshot (a snapshot stores only PERSISTENCE_VERSION)"
+ ],
+ "inputs": [
+  {
+   "file": "data_level0.bin",
+   "bytes": 1072000,
+   "sha256": "72f092969efa5c0523ae6fdfed8e89c844ecc0505b9ee0e96b6cc83678bec07c"
+  },
+  {
+   "file": "header.bin",
+   "bytes": 100,
+   "sha256": "6178fff7788c654a1d346d04747de521874b9b940d3414f7310973683a371424"
+  },
+  {
+   "file": "index_metadata.pickle",
+   "bytes": 55102,
+   "sha256": "b6db701a890ef34b03ccba978ae4a076d61cc8e744270275924ea4a2a930d314"
+  },
+  {
+   "file": "length.bin",
+   "bytes": 16000,
+   "sha256": "67ab08b5c37984d90ef5edd161bff101e0656804b309388ce5a9a97f19ca6a67"
+  },
+  {
+   "file": "link_lists.bin",
+   "bytes": 35448,
+   "sha256": "d4583e9e1485c7ab29aaf111fb14577b3eccc23293a27020355a6a45e16cd894"
+  }
+ ],
+ "snapshot_consistency": {
+  "hash_stable_during_audit": true,
+  "atomic_flush": "UNPROVEN",
+  "note": "Identical file hashes before and after the audit prove only that the files did not change WHILE auditing. They do not prove the five Chroma files came from one atomic flush (persistDirty writes the header first, other files are seeked over, no fsync). Cross-file structural checks passed, but atomic-flush consistency is UNPROVEN."
+ },
+ "api_status": "UNKNOWN: whether Chroma get()/query() return these IDs was NOT measured by this audit; the claims here concern graph structure only",
+ "operational": {
+  "sqlite": "read (immutable, snapshot copy)",
+  "vector_segment_watermark": 6000,
+  "metadata_segment_seq": 6600,
+  "queue_max_seq": 6600,
+  "pending_operations": 600,
+  "pending_by_op": {
+   "UPSERT": 600
+  },
+  "pending_id_count": 600,
+  "pending_ids_sample": [
+   "1",
+   "1001",
+   "1012",
+   "1013",
+   "1021",
+   "104",
+   "1042",
+   "1044",
+   "105",
+   "106",
+   "1063",
+   "1071",
+   "1075",
+   "1076",
+   "1077",
+   "1089",
+   "109",
+   "1109",
+   "1112",
+   "1117",
+   "1121",
+   "1122",
+   "1124",
+   "1125",
+   "1140",
+   "115",
+   "1150",
+   "1155",
+   "1158",
+   "1162",
+   "1173",
+   "1177",
+   "1179",
+   "1180",
+   "1182",
+   "119",
+   "1215",
+   "1223",
+   "1224",
+   "1233",
+   "1236",
+   "1237",
+   "1238",
+   "1243",
+   "1249",
+   "125",
+   "1255",
+   "1263",
+   "1273",
+   "1283"
+  ],
+  "sqlite_vs_idmap_unexplained_live_diff": 0
+ },
+ "settled": "NO or unknown (see status)",
+ "layout": "chroma",
+ "format": {
+  "persistence_version": 1,
+  "dim": 32,
+  "maxM": 16,
+  "maxM0": 32,
+  "M": 16,
+  "ef_construction": 100,
+  "max_elements": 8192,
+  "stride": 268
+ },
+ "summary": {
+  "nodes": 4000,
+  "live": 2000,
+  "tombstoned_native": 2000,
+  "unreachable_proven": null,
+  "tombstone_dependent": null,
+  "reachable_not_claimed": null,
+  "entry_internal": 1358,
+  "entry_deleted": false,
+  "maxlevel": 3,
+  "envelope_size": 260,
+  "reach0_size": 4000,
+  "reach_live_only_size": 3978,
+  "layer0_zero_in_degree_live": 1,
+  "scc_count": 2,
+  "scc_largest": 3999,
+  "verdict": "NO CERTIFICATE (NOT_SETTLED): the effective-store graph is unknown; structural counts below describe the persisted files only and must not be read as index health"
+ },
+ "consistency": {
+  "idmap": "ok",
+  "mapped_but_tombstoned": [],
+  "mapped_but_tombstoned_count": 0,
+  "native_active_without_id_count": 0,
+  "mapped_label_absent_in_graph_count": 0,
+  "meta": {
+   "dimensionality": null,
+   "total_elements_added": 4000,
+   "max_seq_id": null
+  }
+ },
+ "anomalies": [],
+ "findings": [],
+ "findings_truncated": false,
+ "elapsed_s": 0.302,
+ "persisted_observations": {
+  "nodes": 4000,
+  "live": 2000,
+  "tombstoned_native": 2000,
+  "unreachable_proven": 0,
+  "tombstone_dependent": 9,
+  "reachable_not_claimed": 1991,
+  "entry_internal": 1358,
+  "entry_deleted": false,
+  "maxlevel": 3,
+  "envelope_size": 260,
+  "reach0_size": 4000,
+  "reach_live_only_size": 3978,
+  "layer0_zero_in_degree_live": 1,
+  "scc_count": 2,
+  "scc_largest": 3999
+ },
+ "persisted_only_findings": [
+  {
+   "id": "1903",
+   "label": 1904,
+   "internal": 1603,
+   "class": "TOMBSTONE_DEPENDENT",
+   "level": 0,
+   "in_degree_layer0": 2,
+   "out_degree_layer0": 2,
+   "in_neighbours_layer0": [
+    {
+     "internal": 816,
+     "label": 985,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 862,
+     "label": 741,
+     "deleted": true,
+     "reachable": true
+    }
+   ],
+   "why": "reachable only by routing through deleted (tombstoned) nodes; breaks if tombstones are purged or the index is compacted",
+   "pending_operation": false
+  },
+  {
+   "id": "2571",
+   "label": 2572,
+   "internal": 2994,
+   "class": "TOMBSTONE_DEPENDENT",
+   "level": 0,
+   "in_degree_layer0": 2,
+   "out_degree_layer0": 3,
+   "in_neighbours_layer0": [
+    {
+     "internal": 2124,
+     "label": 2182,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 2497,
+     "label": 2048,
+     "deleted": true,
+     "reachable": true
+    }
+   ],
+   "why": "reachable only by routing through deleted (tombstoned) nodes; breaks if tombstones are purged or the index is compacted",
+   "pending_operation": false
+  },
+  {
+   "id": "2697",
+   "label": 2698,
+   "internal": 2729,
+   "class": "TOMBSTONE_DEPENDENT",
+   "level": 0,
+   "in_degree_layer0": 4,
+   "out_degree_layer0": 4,
+   "in_neighbours_layer0": [
+    {
+     "internal": 1497,
+     "label": 1438,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 2053,
+     "label": 2384,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 2432,
+     "label": 2313,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 2668,
+     "label": 2510,
+     "deleted": true,
+     "reachable": true
+    }
+   ],
+   "why": "reachable only by routing through deleted (tombstoned) nodes; breaks if tombstones are purged or the index is compacted",
+   "pending_operation": false
+  },
+  {
+   "id": "2917",
+   "label": 2918,
+   "internal": 2799,
+   "class": "TOMBSTONE_DEPENDENT",
+   "level": 0,
+   "in_degree_layer0": 8,
+   "out_degree_layer0": 8,
+   "in_neighbours_layer0": [
+    {
+     "internal": 17,
+     "label": 461,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 74,
+     "label": 354,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 986,
+     "label": 949,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 1810,
+     "label": 1959,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 2207,
+     "label": 2007,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 2700,
+     "label": 2804,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 3055,
+     "label": 3034,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 3523,
+     "label": 3654,
+     "deleted": true,
+     "reachable": true
+    }
+   ],
+   "why": "reachable only by routing through deleted (tombstoned) nodes; breaks if tombstones are purged or the index is compacted",
+   "pending_operation": false
+  },
+  {
+   "id": "3629",
+   "label": 3630,
+   "internal": 3909,
+   "class": "TOMBSTONE_DEPENDENT",
+   "level": 0,
+   "in_degree_layer0": 4,
+   "out_degree_layer0": 4,
+   "in_neighbours_layer0": [
+    {
+     "internal": 190,
+     "label": 206,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 1368,
+     "label": 1193,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 2300,
+     "label": 2093,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 3719,
+     "label": 3718,
+     "deleted": true,
+     "reachable": true
+    }
+   ],
+   "why": "reachable only by routing through deleted (tombstoned) nodes; breaks if tombstones are purged or the index is compacted",
+   "pending_operation": false
+  },
+  {
+   "id": "3867",
+   "label": 3868,
+   "internal": 3958,
+   "class": "TOMBSTONE_DEPENDENT",
+   "level": 0,
+   "in_degree_layer0": 4,
+   "out_degree_layer0": 4,
+   "in_neighbours_layer0": [
+    {
+     "internal": 15,
+     "label": 261,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 1792,
+     "label": 1519,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 2068,
+     "label": 2432,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 3069,
+     "label": 3201,
+     "deleted": true,
+     "reachable": true
+    }
+   ],
+   "why": "reachable only by routing through deleted (tombstoned) nodes; breaks if tombstones are purged or the index is compacted",
+   "pending_operation": false
+  },
+  {
+   "id": "3992",
+   "label": 3993,
+   "internal": 3753,
+   "class": "TOMBSTONE_DEPENDENT",
+   "level": 0,
+   "in_degree_layer0": 4,
+   "out_degree_layer0": 4,
+   "in_neighbours_layer0": [
+    {
+     "internal": 1214,
+     "label": 1497,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 1242,
+     "label": 1500,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 2573,
+     "label": 2535,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 3704,
+     "label": 3865,
+     "deleted": true,
+     "reachable": true
+    }
+   ],
+   "why": "reachable only by routing through deleted (tombstoned) nodes; breaks if tombstones are purged or the index is compacted",
+   "pending_operation": true
+  },
+  {
+   "id": "52",
+   "label": 53,
+   "internal": 277,
+   "class": "TOMBSTONE_DEPENDENT",
+   "level": 0,
+   "in_degree_layer0": 6,
+   "out_degree_layer0": 8,
+   "in_neighbours_layer0": [
+    {
+     "internal": 365,
+     "label": 473,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 378,
+     "label": 114,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 526,
+     "label": 555,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 597,
+     "label": 577,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 1079,
+     "label": 1385,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 1948,
+     "label": 1936,
+     "deleted": true,
+     "reachable": true
+    }
+   ],
+   "why": "reachable only by routing through deleted (tombstoned) nodes; breaks if tombstones are purged or the index is compacted",
+   "pending_operation": true
+  },
+  {
+   "id": "951",
+   "label": 952,
+   "internal": 785,
+   "class": "TOMBSTONE_DEPENDENT",
+   "level": 0,
+   "in_degree_layer0": 3,
+   "out_degree_layer0": 4,
+   "in_neighbours_layer0": [
+    {
+     "internal": 237,
+     "label": 347,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 1732,
+     "label": 1911,
+     "deleted": true,
+     "reachable": true
+    },
+    {
+     "internal": 2002,
+     "label": 2026,
+     "deleted": true,
+     "reachable": true
+    }
+   ],
+   "why": "reachable only by routing through deleted (tombstoned) nodes; breaks if tombstones are purged or the index is compacted",
+   "pending_operation": true
+  }
+ ]
+}
